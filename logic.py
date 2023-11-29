@@ -5,12 +5,13 @@ from flask import jsonify
 
 class Logic:
     def __init__(self):
+        print('creating logic')
         self.input_queue = queue.Queue()
         self.lock = threading.Lock()
         self.pending = {}
         self.workthread = threading.Thread(target=self.run)
         self.workthread.start()
-
+        
 
     def update(self, data):
         self.input_queue.put(data)
@@ -33,6 +34,7 @@ class Logic:
 
 
     def run(self):
+        print('logic running')
         while True:
             data = self.input_queue.get()
             if data==0: break
@@ -43,4 +45,5 @@ class Logic:
     def stop(self):
         self.input_queue.put(0)
         self.workthread.join()
+
 

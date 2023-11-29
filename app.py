@@ -12,9 +12,6 @@ logging.basicConfig(filename=os.environ.get('WIRESYNC_LOG'), encoding='utf-8', l
 logging.info('STARTING UP')
 
 
-mind = logic.Logic()
-
-
 ################################# FLASK STUFF #################################
 
 funcs = {}
@@ -47,6 +44,7 @@ def test():
 
 
 if __name__ == "__main__":
+    mind = logic.Logic()
     funcs['update'] = mind.update
     funcs['check'] = mind.check
 
@@ -54,6 +52,6 @@ if __name__ == "__main__":
     app.run(
         host=os.environ.get("IP", "0.0.0.0"),
         port=int(os.environ.get("PORT", "5000")),
-        debug=True)
+        debug=False)
 
 
