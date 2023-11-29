@@ -31,8 +31,16 @@ function getmsg(data) {
 
 
 async function statPressed(e) {
-	const data = { 't':'stat' };
+	e.preventDefault();
+	const data = { 't':'stat',
+		'm':document.getElementById('msgLine').value };
 	sendmsg(data);
 }
-rfuncs['stat'] = groupAnswer;
+rfuncs['stat'] = function(data) {
+	say('stat response: ' + data['m']);
+}
+
+$("#submit").click(statPressed);
+$("#msgLine").addEventListener("submit", function(event) { preventDefault(event); });
+
 
