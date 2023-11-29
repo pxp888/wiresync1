@@ -12,26 +12,7 @@ logging.basicConfig(filename=os.environ.get('WIRESYNC_LOG'), encoding='utf-8', l
 logging.info('STARTING UP')
 
 
-
-
-def update(data):
-    logic.input_queue.put(data)
-    response_data = { "t": "update" }
-    return jsonify(response_data)
-
-
-def check(data):
-    pk = data['publickey']
-    logic.lock.acquire()
-    if pk in logic.pending:
-        response_data = { "t": "check", 
-                         "pending": True, 
-                         "data": logic.pending[pk] }
-    else:
-        response_data = { "t": "check", 
-                         "pending": False }
-    logic.lock.release()
-    return response_data
+mind = logic.Logic()
 
 
 ################################# FLASK STUFF #################################
@@ -66,15 +47,13 @@ def test():
 
 
 if __name__ == "__main__":
-    funcs['update'] = update
-    funcs['check'] = check
+    funcs['update'] = mind.update
+    funcs['check'] = mind.check
 
-    t = logic.start()
 
     app.run(
         host=os.environ.get("IP", "0.0.0.0"),
         port=int(os.environ.get("PORT", "5000")),
         debug=True)
 
-    logic.stop()
 

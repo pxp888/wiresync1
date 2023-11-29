@@ -1,7 +1,7 @@
 import requests
 import os 
 import time
-import subprocess as sp
+import subprocess
 import configparser
 
 
@@ -22,7 +22,7 @@ except Exception as e:
 def show(item):
     out = {}
     com = f'sudo wg show wg0 {item}'
-    res = sp.getoutput(com).split('\n')
+    res = subprocess.getoutput(com).split('\n')
     for i in res:
         n = i.split('\t')
         if n[1] != '(none)':
@@ -30,39 +30,54 @@ def show(item):
     return out
 
 
+def getLanIP(prefix='192.168.1'):
+	command = f'ifconfig | grep {prefix}'
+	m = subprocess.check_output(command, shell=True).decode('utf-8').strip().split(' ')[1]
+	return m
+
+
+def getWanIP():
+	command = 'curl -s ifconfig.me'
+	try:
+		m = subprocess.check_output(command, shell=True).decode('utf-8').strip()
+		return m
+	except:
+		return 'WAN IP failed'
+
+
 lan_name = gin['lan_name']
-publickey = sp.getoutput('sudo wg show wg0 public-key')
+publickey = subprocess.getoutput('sudo wg show wg0 public-key')
 endpoints = show('endpoints')
 ips = show('allowed-ips')
 lastinfo = 0 
+
+
+def sendmsg(data):
+    try:
+        response = requests.post(f'http://{gin["server"]}/test', json={'data': data})
+        return response.json()
+    except Exception as e:
+        print(e)
+        return None
 
 
 def update():
     data = {'t':'update',
             'lan_name': lan_name,
             'publickey': publickey,
+            'lanip': getLanIP(),
             'endpoints': endpoints,
             'ips': ips}
-    try:
-        response = requests.post(f'http://{gin["server"]}/test', json={'data': data})
-        return response.json()
-    except Exception as e:
-        print(e)
-        return None
-
-
-update()
+    return sendmsg(data)
 
 
 def check():
     data = {'t':'check',
             'publickey': publickey}
-    try:
-        response = requests.post(f'http://{gin["server"]}/test', json={'data': data})
-        return response.json()
-    except Exception as e:
-        print(e)
-        return None
+    return sendmsg(data)
+
+
+update()
 
 
 while True:
@@ -70,8 +85,5 @@ while True:
     if pending is not None:
         print(pending)
     
-
     time.sleep(3)
-
-
 
