@@ -47,7 +47,7 @@ if __name__ == "__main__":
 	mind = logic.Logic()
 	funcs['update'] = mind.update
 	funcs['check'] = mind.check
-
+	funcs['getPeer'] = mind.getPeer
 	
 	app.run(
 		host=os.environ.get("IP", "0.0.0.0"),

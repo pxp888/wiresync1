@@ -76,14 +76,21 @@ def check():
     return sendmsg(data)
 
 
+def getPeer(pk):
+    data = {'t':'getPeer', 'publickey': pk}
+    return sendmsg(data)
+
+
 update()
 
-
+count=0
 while True:
-    time.sleep(3)
-    pending = check()
-    if pending is None: continue
-    print(pending['items'])
+    time.sleep(1)
+    count = (count+1)%1024
+    if count%3==0:
+        pending = check()
+        if pending is None: continue
+        print(pending['items'])
 
 
     
