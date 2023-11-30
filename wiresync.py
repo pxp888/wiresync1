@@ -63,11 +63,10 @@ def sendmsg(data):
 
 def update():
     data = {'t':'update',
-            'lan_name': lan_name,
             'publickey': publickey,
+            'lan_name': lan_name,
             'lanip': getLanIP(),
-            'endpoints': endpoints,
-            'ips': ips}
+            'wanip': getWanIP()}
     return sendmsg(data)
 
 

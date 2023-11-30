@@ -1,17 +1,26 @@
 import threading
 import queue
 from flask import jsonify
+import sqlite3
 
 
 class Logic:
     def __init__(self):
         print('creating logic')
         self.input_queue = queue.Queue()
-        self.lock = threading.Lock()
+        self.pendingLock = threading.Lock()
         self.pending = {}
         self.workthread = threading.Thread(target=self.run)
         self.workthread.start()
         
+        '''create dbase'''
+        self.conn = sqlite3.connect('dbase.db')
+        self.cur = self.conn.cursor()
+        self.cur.execute('''CREATE TABLE IF NOT EXISTS clients
+                     (publickey text, lan_name text, lanip text, wanip text)''')
+        self.conn.commit()
+        
+
 
     def update(self, data):
         self.input_queue.put(data)
@@ -21,7 +30,7 @@ class Logic:
 
     def check(self, data):
         pk = data['publickey']
-        self.lock.acquire()
+        self.pendingLock.acquire()
         if pk in self.pending:
             response_data = { "t": "check", 
                              "pending": True, 
@@ -29,7 +38,7 @@ class Logic:
         else:
             response_data = { "t": "check", 
                              "pending": False }
-        self.lock.release()
+        self.pendingLock.release()
         return response_data
 
 
@@ -38,12 +47,14 @@ class Logic:
         while True:
             data = self.input_queue.get()
             if data==0: break
-            print(data)
             self.input_queue.task_done()
+
+            
+            
+
 
 
     def stop(self):
         self.input_queue.put(0)
         self.workthread.join()
-
 
