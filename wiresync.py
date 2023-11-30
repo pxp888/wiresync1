@@ -64,6 +64,7 @@ def sendmsg(data):
 def update():
     data = {'t':'update',
             'publickey': publickey,
+            'wgip': getLanIP('10.0.0'),
             'lan_name': lan_name,
             'lanip': getLanIP(),
             'wanip': getWanIP()}
@@ -71,8 +72,7 @@ def update():
 
 
 def check():
-    data = {'t':'check',
-            'publickey': publickey}
+    data = {'t':'check', 'publickey': publickey}
     return sendmsg(data)
 
 
@@ -80,9 +80,12 @@ update()
 
 
 while True:
-    pending = check()
-    if pending is not None:
-        print(pending)
-    
     time.sleep(3)
+    pending = check()
+    if pending is None: continue
+    print(pending['items'])
+
+
+    
+    
 
