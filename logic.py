@@ -6,6 +6,36 @@ from collections import defaultdict
 import sqlite3
 
 
+class Dbase:
+	def __init__(self) -> None:
+		self.conn = sqlite3.connect('dbase.db')
+		self.cur = self.conn.cursor()
+		self.cur.execute('''CREATE TABLE IF NOT EXISTS clients(publickey text UNIQUE, wgip text, lan_name text, lanip text, wanip text, time text)''')
+		self.conn.commit()
+
+
+	def updateDB(self, data):
+		self.cur.execute(f'''REPLACE INTO clients VALUES ('{data['publickey']}', '{data['wgip']}', '{data['lan_name']}', '{data['lanip']}', '{data['wanip']}', '{time.time()}' )''')
+		self.conn.commit()
+
+
+	def peersBylan_name(self, lan_name):
+		peers = []
+		self.cur.execute(f'SELECT * FROM clients WHERE lan_name="{lan_name}"')
+		for row in self.cur.fetchall():
+			peers.append({'publickey': row[0], 'wgip': row[1], 'lan_name': row[2], 'lanip': row[3], 'wanip': row[4]})
+		return peers
+
+
+	def getPeer(self, publickey):
+		self.cur.execute(f'SELECT * FROM clients WHERE publickey="{publickey}"')
+		row = self.cur.fetchone()
+		if row is None:
+			return None
+		else:
+			return {'publickey': row[0], 'wgip': row[1], 'lan_name': row[2], 'lanip': row[3], 'wanip': row[4]}
+
+
 class Logic:
 	def __init__(self):
 		print('creating logic')
@@ -37,16 +67,8 @@ class Logic:
 		return jsonify(response_data)
 
 
-	def _createDatabase(self):
-		self.conn = sqlite3.connect('dbase.db')
-		self.cur = self.conn.cursor()
-		self.cur.execute('''CREATE TABLE IF NOT EXISTS clients(publickey text UNIQUE, wgip text, lan_name text, lanip text, wanip text, time text)''')
-		self.conn.commit()
-
-
 	def _getPeer(self, data):
-		self.cur.execute(f'SELECT * FROM clients WHERE publickey="{data["publickey"]}"')
-		row = self.cur.fetchone()
+		row = self.db.getPeer(data["publickey"])
 		if row is None:
 			response_data = { "t": "noPeer", "publickey": data["publickey"] }
 		else:
@@ -56,22 +78,9 @@ class Logic:
 		self.pendingLock.release()
 
 
-	def _updateDB(self, data):
-		self.cur.execute(f'''REPLACE INTO clients VALUES ('{data['publickey']}', '{data['wgip']}', '{data['lan_name']}', '{data['lanip']}', '{data['wanip']}', '{time.time()}' )''')
-		self.conn.commit()
-
-
-	def _peersBylan_name(self, lan_name):
-		peers = []
-		self.cur.execute(f'SELECT * FROM clients WHERE lan_name="{lan_name}"')
-		for row in self.cur.fetchall():
-			peers.append({'publickey': row[0], 'wgip': row[1], 'lan_name': row[2], 'lanip': row[3], 'wanip': row[4]})
-		return peers
-
-
 	def _update(self, data):
-		self._updateDB(data)
-		peers = self._peersBylan_name(data['lan_name'])
+		self.db.updateDB(data)
+		peers = self.db.peersBylan_name(data['lan_name'])
 		response_data = { "t": "lanpeers", "peers": peers }
 		self.pendingLock.acquire()
 		self.pending[data['publickey']].append(response_data)
@@ -80,7 +89,7 @@ class Logic:
 
 	def run(self):
 		print('logic running')
-		self._createDatabase()
+		self.db = Dbase()
 
 		while True:
 			data = self.input_queue.get()
