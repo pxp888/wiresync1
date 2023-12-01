@@ -59,7 +59,6 @@ class Logic:
 	def _updateDB(self, data):
 		self.cur.execute(f'''REPLACE INTO clients VALUES ('{data['publickey']}', '{data['wgip']}', '{data['lan_name']}', '{data['lanip']}', '{data['wanip']}', '{time.time()}' )''')
 		self.conn.commit()
-		print('dbase updated', data)
 
 
 	def _peersBylan_name(self, lan_name):
@@ -70,6 +69,15 @@ class Logic:
 		return peers
 
 
+	def _update(self, data):
+		self._updateDB(data)
+		peers = self._peersBylan_name(data['lan_name'])
+		response_data = { "t": "lanpeers", "peers": peers }
+		self.pendingLock.acquire()
+		self.pending[data['publickey']].append(response_data)
+		self.pendingLock.release()
+
+
 	def run(self):
 		print('logic running')
 		self._createDatabase()
@@ -78,16 +86,9 @@ class Logic:
 			data = self.input_queue.get()
 			if data==0: break
 			if data['t'] == 'update':
-				self._updateDB(data)
-				peers = self._peersBylan_name(data['lan_name'])
-				response_data = { "t": "lanpeers", "peers": peers }
-				self.pendingLock.acquire()
-				self.pending[data['publickey']].append(response_data)
-				self.pendingLock.release()
-
+				self._update(data)
 			elif data['t'] == 'getPeer':
 				self._getPeer(data)
-
 
 			self.input_queue.task_done()
 

@@ -49,7 +49,6 @@ lan_name = gin['lan_name']
 publickey = subprocess.getoutput('sudo wg show wg0 public-key')
 endpoints = show('endpoints')
 ips = show('allowed-ips')
-lastinfo = 0 
 
 
 def sendmsg(data):
@@ -81,16 +80,17 @@ def getPeer(pk):
     return sendmsg(data)
 
 
-update()
-
-count=0
-while True:
-    time.sleep(1)
-    count = (count+1)%1024
-    if count%3==0:
-        pending = check()
-        if pending is None: continue
-        print(pending['items'])
+if __name__ == '__main__':
+    update()
+    count=0
+    while True:
+        time.sleep(1)
+        count = (count+1)%1024
+        if count%3==0:
+            pending = check()
+            if pending is None: continue
+            for i in pending['items']:
+                 print(i)
 
 
     
