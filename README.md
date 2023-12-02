@@ -79,19 +79,43 @@ wt <--> db
 |lan_name|MAC Address of gateway
 
 
-## client messages
+## Messaging
 
-|type|description|response|description
-|-|-|-|-|
-|update|self peer info| update_ack| ack
-|check|check for responses| pending | list of messages
-|getPeer| peer publickey | getPeer_ack| ack
-
-
-## server messages
-|type|description
+|__client : update__||
 |-|-|
-|peer| details of one peer
-|peers|list of peers on the same LAN
+|t|update|
+|publickey| wireguard publickey
+|wgip| wireguard IP address
+|listen_port| wireguard listen port
+|lanip| LAN IP address
+|wanip| WAN IP address
+|lan_name| Gateway MAC address
 
+
+
+|__server : update_ack__||
+|-|-|
+|t|update_ack|
+
+
+|__server : keys__||
+|-|-|
+|t|keys|
+|keys|list of keys of LAN peers
+
+
+|__client : getPeer__||
+|-|-|
+|t|getPeer|
+|publickey|client public key
+|targetkey|wanted client public key
+
+|__server : getPeer_ack__||
+|-|-|
+|t|getPeer_ack|
+
+
+|__server : peer__||
+|-|-|
+|t|peer|
 

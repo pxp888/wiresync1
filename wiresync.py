@@ -80,6 +80,7 @@ def get_gateway_mac():
 def sendmsg(data):
 	try:
 		response = requests.post(f'http://{gin["server"]}/test', json={'data': data})
+		print(response.json())
 		return response.json()
 	except Exception as e:
 		print(e)
@@ -92,6 +93,7 @@ class Client:
 
 		self.funcs = {'pending': self.pending,
 					'peers': self.peers,
+					'keys': self.keys,
 					'peer': self.peer}
 		
 		self.endpoints = show('endpoints')
@@ -105,7 +107,7 @@ class Client:
 
 
 	def handle(self, data):
-		if data is None: 
+		if data is None:
 			print('data is None')
 			return 
 		if not 't' in data: 
@@ -143,8 +145,15 @@ class Client:
 			self.handle(i)
 
 
+	def keys(self, data):
+		for i in data['keys']:
+			data = {'t':'getPeer', 'publickey': self.publickey, 'targetkey': i}
+			sendmsg(data)
+
+
 	def peer(self, data):
-		if data['publickey'] == self.publickey: return
+		if data['publickey'] == self.publickey: 
+			return
 
 		if data['lan_name'] == self.lan_name:
 			endpoint = data['lanip'] + ':' + data['listen_port']
@@ -163,10 +172,11 @@ class Client:
 if __name__ == '__main__':
 	n = Client()
 
+	n.update()
 	while True:
-		n.update()
 		time.sleep(.25)
 		n.check()
 		time.sleep(1)
+		# break
 
 

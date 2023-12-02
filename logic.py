@@ -21,9 +21,9 @@ class Dbase:
 
 	def peersBylan_name(self, lan_name):
 		peers = []
-		self.cur.execute(f'SELECT * FROM clients WHERE lan_name="{lan_name}"')
+		self.cur.execute(f'SELECT publickey FROM clients WHERE lan_name="{lan_name}"')
 		for row in self.cur.fetchall():
-			peers.append({'t':'peer', 'publickey': row[0], 'wgip': row[1], 'listen_port':row[2], 'lan_name': row[3], 'lanip': row[4], 'wanip': row[5]})
+			peers.append(row[0])
 		return peers
 
 
@@ -72,9 +72,9 @@ class Logic:
 
 
 	def _getPeer(self, data):
-		row = self.db.getPeer(data["publickey"])
+		row = self.db.getPeer(data["targetkey"])
 		if row is None:
-			response_data = { "t": "noPeer", "publickey": data["publickey"] }
+			response_data = { "t": "noPeer", "publickey": data["targetkey"] }
 		else:
 			response_data = row
 		self.pendingLock.acquire()
@@ -84,10 +84,11 @@ class Logic:
 
 	def _update(self, data):
 		self.db.updateDB(data)
-		peers = self.db.peersBylan_name(data['lan_name'])
-		response_data = { "t": "peers", "peers": peers }
+		keys = self.db.peersBylan_name(data['lan_name'])
+		response_data = {'t':'keys', 'keys': keys}
 		self.pendingLock.acquire()
-		self.pending[data['publickey']].append(response_data)
+		for key in keys:
+			self.pending[key].append(response_data)
 		self.pendingLock.release()
 
 
@@ -100,7 +101,7 @@ class Logic:
 			if data==0: break
 			if data['t'] == 'update':
 				self._update(data)
-			elif data['t'] == 'getPeer':
+			if data['t'] == 'getPeer':
 				self._getPeer(data)
 
 			self.input_queue.task_done()
