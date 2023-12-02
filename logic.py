@@ -10,12 +10,12 @@ class Dbase:
 	def __init__(self) -> None:
 		self.conn = sqlite3.connect('dbase.db')
 		self.cur = self.conn.cursor()
-		self.cur.execute('''CREATE TABLE IF NOT EXISTS clients(publickey text UNIQUE, wgip text, lan_name text, lanip text, wanip text, time text)''')
+		self.cur.execute('''CREATE TABLE IF NOT EXISTS clients(publickey text UNIQUE, wgip text, listen_port text, lan_name text, lanip text, wanip text, time text)''')
 		self.conn.commit()
 
 
 	def updateDB(self, data):
-		self.cur.execute(f'''REPLACE INTO clients VALUES ('{data['publickey']}', '{data['wgip']}', '{data['lan_name']}', '{data['lanip']}', '{data['wanip']}', '{time.time()}' )''')
+		self.cur.execute(f'''REPLACE INTO clients VALUES ('{data['publickey']}', '{data['wgip']}', '{data['listen_port']}', '{data['lan_name']}', '{data['lanip']}', '{data['wanip']}', '{time.time()}' )''')
 		self.conn.commit()
 
 
@@ -23,7 +23,7 @@ class Dbase:
 		peers = []
 		self.cur.execute(f'SELECT * FROM clients WHERE lan_name="{lan_name}"')
 		for row in self.cur.fetchall():
-			peers.append({'publickey': row[0], 'wgip': row[1], 'lan_name': row[2], 'lanip': row[3], 'wanip': row[4]})
+			peers.append({'t':'peer', 'publickey': row[0], 'wgip': row[1], 'listen_port':row[2], 'lan_name': row[3], 'lanip': row[4], 'wanip': row[5]})
 		return peers
 
 
@@ -33,7 +33,11 @@ class Dbase:
 		if row is None:
 			return None
 		else:
-			return {'publickey': row[0], 'wgip': row[1], 'lan_name': row[2], 'lanip': row[3], 'wanip': row[4]}
+			return {'publickey': row[0], 'wgip': row[1], 'listen_port':row[2], 'lan_name': row[3], 'lanip': row[4], 'wanip': row[5]}
+
+
+	def close(self):
+		self.conn.close()
 
 
 class Logic:
@@ -72,7 +76,8 @@ class Logic:
 		if row is None:
 			response_data = { "t": "noPeer", "publickey": data["publickey"] }
 		else:
-			response_data = { "t": "peer", "publickey": data["publickey"], 'wgip': row[1], 'lan_name': row[2], 'lanip': row[3], 'wanip': row[4] }
+			response_data = row
+			response_data["t"] = "peer"
 		self.pendingLock.acquire()
 		self.pending[data['publickey']].append(response_data)
 		self.pendingLock.release()
@@ -81,7 +86,7 @@ class Logic:
 	def _update(self, data):
 		self.db.updateDB(data)
 		peers = self.db.peersBylan_name(data['lan_name'])
-		response_data = { "t": "lanpeers", "peers": peers }
+		response_data = { "t": "peers", "peers": peers }
 		self.pendingLock.acquire()
 		self.pending[data['publickey']].append(response_data)
 		self.pendingLock.release()
@@ -101,7 +106,7 @@ class Logic:
 
 			self.input_queue.task_done()
 
-		self.conn.close()
+		self.db.close()
 
 
 	def stop(self):

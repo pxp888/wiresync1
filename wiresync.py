@@ -1,33 +1,32 @@
 import requests
-import os 
+import os
 import time
 import subprocess
 import configparser
 
 
 try:
-    config = configparser.ConfigParser()
-    config.read('wiresync.ini')
-    gin = dict(config['wiresync'])
+	config = configparser.ConfigParser()
+	config.read('wiresync.ini')
+	gin = dict(config['wiresync'])
 except Exception as e:
-    print(e)
-    print('No config file found, using defaults')
-    gin = {
-        'server': '52.56.34.125:5001',
-        'interface': 'wg0',
-        'lan_name': 'home'
-    }
+	print(e)
+	print('No config file found, using defaults')
+	gin = {
+		'server': '192.168.1.38:5000',
+		'interface': 'wg0'
+	}
 
 
 def show(item):
-    out = {}
-    com = f'sudo wg show wg0 {item}'
-    res = subprocess.getoutput(com).split('\n')
-    for i in res:
-        n = i.split('\t')
-        if n[1] != '(none)':
-            out[n[0]] = n[1]
-    return out
+	out = {}
+	com = f'sudo wg show wg0 {item}'
+	res = subprocess.getoutput(com).split('\n')
+	for i in res:
+		n = i.split('\t')
+		if n[1] != '(none)':
+			out[n[0]] = n[1]
+	return out
 
 
 def getLanIP(prefix='192.168.1'):
@@ -45,54 +44,117 @@ def getWanIP():
 		return 'WAN IP failed'
 
 
-lan_name = gin['lan_name']
-publickey = subprocess.getoutput('sudo wg show wg0 public-key')
-endpoints = show('endpoints')
-ips = show('allowed-ips')
+def get_wg_publickey(interface='wg0'):
+	try:
+		result = subprocess.getoutput(f'sudo wg show {interface} public-key')
+		return result
+	except Exception as e:
+		print(f"Error: {e}")
+		return None
 
 
-def sendmsg(data):
+def get_wg_port(interface='wg0'):
     try:
-        response = requests.post(f'http://{gin["server"]}/test', json={'data': data})
-        return response.json()
+        result = subprocess.getoutput(f'sudo wg show {interface} listen-port')
+        return result
     except Exception as e:
-        print(e)
+        print(f"Error: {e}")
         return None
 
 
-def update():
-    data = {'t':'update',
-            'publickey': publickey,
-            'wgip': getLanIP('10.0.0'),
-            'lan_name': lan_name,
-            'lanip': getLanIP(),
-            'wanip': getWanIP()}
-    return sendmsg(data)
+def get_gateway_mac():
+	try:
+		# Get the default gateway
+		result = subprocess.check_output("ip route | grep default", shell=True).decode('utf-8').strip()
+		gateway_ip = result.split()[2]
+
+		# Get the MAC address of the gateway
+		result = subprocess.check_output(f"arp -n {gateway_ip} | grep {gateway_ip}", shell=True).decode('utf-8').strip()
+		gateway_mac = result.split()[2]
+
+		return gateway_mac
+	except Exception as e:
+		print(f"Error: {e}")
+		return None
 
 
-def check():
-    data = {'t':'check', 'publickey': publickey}
-    return sendmsg(data)
+def sendmsg(data):
+	try:
+		response = requests.post(f'http://{gin["server"]}/test', json={'data': data})
+		return response.json()
+	except Exception as e:
+		print(e)
+		return None
 
 
-def getPeer(pk):
-    data = {'t':'getPeer', 'publickey': pk}
-    return sendmsg(data)
+class client:
+	def __init__(self) -> None:
+		self.publickey = get_wg_publickey()
+		self.wgip = getLanIP('10.0.0')
+		self.listen_port = get_wg_port()
+		self.lan_name = get_gateway_mac()
+
+		self.funcs = {'pending': self.pending,
+					'peers': self.peers,
+					'peer': self.peer}
+
+
+	def handle(self, data):
+		if data is None: 
+			print('data is None')
+			return 
+		if not 't' in data: 
+			print('no t in data')
+			return
+		self.funcs[data['t']](data)
+
+
+	def update(self):
+		self.lan_name = get_gateway_mac()
+		data = {'t':'update',
+				'publickey': self.publickey,
+				'wgip': self.wgip,
+				'listen_port': self.listen_port,
+				'lan_name': self.lan_name,
+				'lanip': getLanIP(),
+				'wanip': getWanIP()}
+		return sendmsg(data)
+
+
+	def check(self):
+		data = {'t':'check',
+				'publickey': self.publickey}
+		i = sendmsg(data)
+		self.handle(i)
+
+
+	def pending(self, data):
+		for i in data['items']:
+			self.handle(i)
+
+
+	def peers(self, data):
+		for i in data['peers']:
+			self.handle(i)
+
+
+	def peer(self, data):
+		if data['publickey'] != self.publickey:
+			if data['lan_name'] == self.lan_name:
+				ip = data['lanip']
+			else:
+				ip = data['wanip']
+			print(f'sudo wg set wg0 peer {data["publickey"]} allowed-ips {data["wgip"]}/32 endpoint {ip}:{data["listen_port"]}')
+			print(f'sudo ip route add {data["wgip"]}/32 via dev wg0')
 
 
 if __name__ == '__main__':
-    update()
-    count=0
-    while True:
-        time.sleep(1)
-        count = (count+1)%1024
-        if count%3==0:
-            pending = check()
-            if pending is None: continue
-            for i in pending['items']:
-                 print(i)
+	n = client()
+	n.update()
+	time.sleep(.25)
+	n.check()
 
 
-    
-    
+	print(show('endpoints'))
+
 

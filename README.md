@@ -18,26 +18,79 @@ Dockerfile and docker-compose are set up to containerize a webserver with flask 
 
 still need to package client, maybe pyinstaller?  
 
+# Structure
+
+
+
+## Class structure
+
 
 ```mermaid
-graph LR
-s1(app.py)
-c1(wiresync.py)
-env(env.py)
-cini(wiresync.ini)
+graph TD
+fl(flask - app.py)
+lg(ogic class)
+wt(workthread)
+cl(client - wiresync.py)
+env([env.py])
+wini([wiresync.ini])
+q(Queue)
+pd(pending)
 
-subgraph server
-s1 --> env & db(dbase.db)
+
+
+fl --- env
+fl --- lg
+
+subgraph logic.py
+    lg --- wt & q & pd
+    wt --- db(DBase class)
 end
 
-subgraph client
-c1 --> cini
-end
+cl --- wini
 
-subgraph browser
-br(client browser)
-end
-
-server -.- browser
-server -.- client
 ```
+
+
+## information flow
+```mermaid
+graph TD
+fl(flask - app.py)
+lg(logic)
+wt(workthread)
+cl(client - wiresync.py)
+q(Queue)
+pd(pending)
+
+cl <-.-> fl
+fl <--> lg --> q --> wt --> pd -.-> lg
+wt <--> db
+```
+
+
+### Standard Peer Information
+
+|Peer info|Description|
+|-|-|
+|publickey|public key
+|wgip|Wireguard Address
+|lanip|LAN Ip Address
+|wanip|WAN Ip Address
+|lan_name|MAC Address of gateway
+
+
+## client messages
+
+|type|description|response|description
+|-|-|-|-|
+|update|self peer info| update| ack
+|check|check for responses| check | list of messages
+|getPeer| peer publickey | getPeerack| ack
+
+
+## server messages
+|type|description
+|-|-|
+|peer| details of one peer
+|lanpeers|list of peers with same LAN
+
+
