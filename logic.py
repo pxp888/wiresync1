@@ -33,7 +33,7 @@ class Dbase:
 		if row is None:
 			return None
 		else:
-			return {'publickey': row[0], 'wgip': row[1], 'listen_port':row[2], 'lan_name': row[3], 'lanip': row[4], 'wanip': row[5]}
+			return {'t':'peer', 'publickey': row[0], 'wgip': row[1], 'listen_port':row[2], 'lan_name': row[3], 'lanip': row[4], 'wanip': row[5]}
 
 
 	def close(self):
@@ -77,7 +77,6 @@ class Logic:
 			response_data = { "t": "noPeer", "publickey": data["publickey"] }
 		else:
 			response_data = row
-			response_data["t"] = "peer"
 		self.pendingLock.acquire()
 		self.pending[data['publickey']].append(response_data)
 		self.pendingLock.release()

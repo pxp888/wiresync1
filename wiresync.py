@@ -86,18 +86,22 @@ def sendmsg(data):
 		return None
 
 
-class client:
+class Client:
 	def __init__(self) -> None:
-		self.publickey = get_wg_publickey()
-		self.wgip = getLanIP('10.0.0')
-		self.listen_port = get_wg_port()
-		self.lan_name = get_gateway_mac()
+		self.refresh()
 
 		self.funcs = {'pending': self.pending,
 					'peers': self.peers,
 					'peer': self.peer}
 		
 		self.endpoints = show('endpoints')
+
+
+	def refresh(self):
+		self.publickey = get_wg_publickey()
+		self.wgip = getLanIP('10.0.0')
+		self.listen_port = get_wg_port()
+		self.lan_name = get_gateway_mac()
 
 
 	def handle(self, data):
@@ -149,7 +153,6 @@ class client:
 
 		if data['publickey'] in self.endpoints:
 			if self.endpoints[data['publickey']] == endpoint:
-				print('no change')
 				return 
 
 		self.endpoints[data['publickey']] = endpoint
@@ -158,7 +161,7 @@ class client:
 			
 
 if __name__ == '__main__':
-	n = client()
+	n = Client()
 
 	while True:
 		n.update()
