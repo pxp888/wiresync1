@@ -40,8 +40,9 @@ def getWanIP():
 	try:
 		m = subprocess.check_output(command, shell=True).decode('utf-8').strip()
 		return m
-	except:
-		return 'WAN IP failed'
+	except Exception as e:
+		print(f"Error: {e}")
+		return None
 
 
 def get_wg_publickey(interface='wg0'):
@@ -54,21 +55,19 @@ def get_wg_publickey(interface='wg0'):
 
 
 def get_wg_port(interface='wg0'):
-    try:
-        result = subprocess.getoutput(f'sudo wg show {interface} listen-port')
-        return result
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
+	try:
+		result = subprocess.getoutput(f'sudo wg show {interface} listen-port')
+		return result
+	except Exception as e:
+		print(f"Error: {e}")
+		return None
 
 
 def get_gateway_mac():
 	try:
-		# Get the default gateway
 		result = subprocess.check_output("ip route | grep default", shell=True).decode('utf-8').strip()
 		gateway_ip = result.split()[2]
 
-		# Get the MAC address of the gateway
 		result = subprocess.check_output(f"arp -n {gateway_ip} | grep {gateway_ip}", shell=True).decode('utf-8').strip()
 		gateway_mac = result.split()[2]
 
@@ -97,6 +96,8 @@ class client:
 		self.funcs = {'pending': self.pending,
 					'peers': self.peers,
 					'peer': self.peer}
+		
+		self.endpoints = show('endpoints')
 
 
 	def handle(self, data):
@@ -139,22 +140,30 @@ class client:
 
 
 	def peer(self, data):
-		if data['publickey'] != self.publickey:
-			if data['lan_name'] == self.lan_name:
-				ip = data['lanip']
-			else:
-				ip = data['wanip']
-			print(f'sudo wg set wg0 peer {data["publickey"]} allowed-ips {data["wgip"]}/32 endpoint {ip}:{data["listen_port"]}')
-			print(f'sudo ip route add {data["wgip"]}/32 via dev wg0')
+		if data['publickey'] == self.publickey: return
 
+		if data['lan_name'] == self.lan_name:
+			endpoint = data['lanip'] + ':' + data['listen_port']
+		else:
+			endpoint = data['wanip'] + ':' + data['listen_port']
+
+		if data['publickey'] in self.endpoints:
+			if self.endpoints[data['publickey']] == endpoint:
+				print('no change')
+				return 
+
+		self.endpoints[data['publickey']] = endpoint
+		print(f'sudo wg set wg0 peer {data["publickey"]} allowed-ips {data["wgip"]}/32 endpoint {endpoint}')
+		print(f'sudo ip route add {data["wgip"]}/32 via dev wg0')
+			
 
 if __name__ == '__main__':
 	n = client()
-	n.update()
-	time.sleep(.25)
-	n.check()
 
-
-	print(show('endpoints'))
+	while True:
+		n.update()
+		time.sleep(.25)
+		n.check()
+		time.sleep(1)
 
 
