@@ -83,9 +83,9 @@ wt <--> db
 
 |type|description|response|description
 |-|-|-|-|
-|update|self peer info| update| ack
-|check|check for responses| check | list of messages
-|getPeer| peer publickey | getPeerack| ack
+|update|self peer info| update_ack| ack
+|check|check for responses| pending | list of messages
+|getPeer| peer publickey | getPeer_ack| ack
 
 
 ## server messages

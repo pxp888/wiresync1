@@ -52,7 +52,7 @@ class Logic:
 
 	def update(self, data):
 		self.input_queue.put(data)
-		response_data = { "t": "updateack" }
+		response_data = { "t": "update_ack" }
 		return jsonify(response_data)
 
 
@@ -67,7 +67,7 @@ class Logic:
 
 	def getPeer(self, data):
 		self.input_queue.put(data)
-		response_data = { "t": "getPeerack" }
+		response_data = { "t": "getPeer_ack" }
 		return jsonify(response_data)
 
 
