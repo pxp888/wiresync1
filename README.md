@@ -73,6 +73,7 @@ wt <--> db
 |-|-|
 |publickey|public key
 |wgip|Wireguard Address
+|listen_port| Wireguard listening port
 |lanip|LAN Ip Address
 |wanip|WAN Ip Address
 |lan_name|MAC Address of gateway
@@ -91,6 +92,6 @@ wt <--> db
 |type|description
 |-|-|
 |peer| details of one peer
-|lanpeers|list of peers with same LAN
+|peers|list of peers on the same LAN
 
 
