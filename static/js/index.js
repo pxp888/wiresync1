@@ -48,9 +48,10 @@ function showoutput(data) {
 		let p = document.createElement('p');
 		p.innerText = line;
 
-		if (line.includes('allowed ips:') ) {
-			p.classList.add('highline');
+		if (line.includes('allowed ips:')) {
+			p.classList.add('highline1');
 		}
+		// if ( line.includes('public key:') || line.includes('peer') ) { p.classList.add('highline1'); }
 		box.appendChild(p);
 	}
 }

@@ -5,20 +5,18 @@
 	--backcolor1: rgb(13 17 23);
 	--backcolor2: rgb(9 12 14);
 
-	--highlight1: rgb(128, 196, 241);
+	--highlight1: rgb(96 192 255);
 	--highlight2: rgb(233 32 99);
-	--highlight3: rgb(255, 70, 132);
+	--highlight3: rgb(255 255 255);
 	--backcolor1: rgb(13 17 23);
-	--backcolor2: rgb(24 34 41);
+	--backcolor2: rgb(0 0 0);
 }
 
 body {
 	background-color: var(--backcolor2);
 	margin: 0;
-	
 	-ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
-
 	color: gainsboro;
 }
 body::-webkit-scrollbar {
@@ -35,7 +33,6 @@ header {
 	top: 0;
 	width: 100%;
 	border-bottom: 1px solid rgb(39 39 39);
-	/* box-shadow: 0 0 10px rgba(49, 49, 49, 0.5); */
 }
 
 nav {
@@ -44,7 +41,6 @@ nav {
 	flex-wrap: wrap;
 	align-items: baseline;
 	margin: 0;
-	/* border-bottom: 1px solid rgba(80, 80, 80, 0.5); */
 }
 
 nav div {
@@ -108,18 +104,10 @@ main {
 }
 
 .outarea {
-	flex-grow: 1;
-	/* display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-	align-content:flex-start; */
-
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	grid-template-rows: auto;
-	align-items: start;
-	
-	/* height: calc(100vh - 60px); */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+    grid-template-rows: auto;
+    align-items: start;
 }
 
 .peerbox {
@@ -130,9 +118,8 @@ main {
 	margin: .5rem;
 	padding: .5rem;
 	font-family: 'Roboto Mono', sans-serif;
-	font-weight: 400;
 	font-size: 1rem;
-
+	
 	height: min-content;
 }
 
@@ -155,6 +142,12 @@ main {
 	margin: 0;
 }
 
+.peerbox .publickey {
+	grid-column-start: 1;
+	grid-column-end: 3;
+	overflow: hidden;
+}
+
 .outputbox {
 	background-color: var(--backcolor1);
 	border-radius: 1rem;
@@ -170,7 +163,7 @@ main {
 	margin: .3rem;
 }
 
-.highline {
+.highline1 {
 	color: var(--highlight1);
 }
 
@@ -181,3 +174,4 @@ main {
 .highline3 {
 	color: var(--highlight3);
 }
+
