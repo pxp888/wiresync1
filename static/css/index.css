@@ -13,7 +13,7 @@
 }
 
 body {
-	background-color: var(--backcolor1);
+	background-color: var(--backcolor2);
 	margin: 0;
 	
 	-ms-overflow-style: none;  /* IE and Edge */
@@ -119,7 +119,7 @@ main {
 	grid-template-rows: auto;
 	align-items: start;
 	
-	height: calc(100vh - 60px);
+	/* height: calc(100vh - 60px); */
 }
 
 .peerbox {
