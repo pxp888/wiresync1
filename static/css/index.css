@@ -1,3 +1,164 @@
+:root {
+	--highlight1: rgb(128, 196, 241);
+	--highlight2: rgb(233 32 99);
+	--highlight3: rgb(255, 70, 132);
+	--backcolor1: rgb(46, 48, 62);
+	--backcolor2: rgb(30, 32, 42);
+}
+
 body {
+	background-color: var(--backcolor1);
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+
+	-ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+body::-webkit-scrollbar {
+    display: none;
+}
+
+
+header {
+	font-family: 'Roboto', sans-serif;
+	background-color: var(--backcolor1);
+	color: gainsboro;
+	display: flex;
+	flex-direction: row;
+	z-index: 1;
+
+	/* box-shadow: 0 0 .25rem rgba(255, 255, 255, 0.5); */
+	border-bottom: 1px solid rgba(80, 80, 80, 0.5);
+
+
+	position: fixed;
+	top: 0;
+	width: 100%;
+}
+
+nav {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: baseline;
+	margin: 0;
+}
+
+nav div {
+	display: flex;
+	flex-direction: row;
+	align-items: baseline;
+}
+
+nav p {
+	margin: 0;
+}
+
+.myButton {
+	margin: 0;
+	padding: .25rem 1rem;
+	border-radius: .5rem;
+	font-weight: 400;
+	margin: 0 1rem;
+	transition: color .5s ease;
+}
+
+.myButton:hover {
+	cursor: pointer;
+	/* color: var(--highlight2); */
+	/* background-color: rgb(10, 10, 10); */
+	color: white;
+	font-weight: 600;
+}
+
+#logo1 {
+	font-size: 3rem;
+	font-weight: 100;
+	margin: 0;
+	margin-left: 2rem;
+	margin-bottom: 4px;
+	color: var(--highlight1)
+}
+
+#logo2 {
+	font-size: 3rem;
+	font-weight: 100;
+	margin: 0;
+	margin-right: 2rem;
+	color: var(--highlight2)
+}
+
+main {
+	background-color: var(--backcolor2);
+	margin: 0;
+	margin-top: 62px;
+	overflow-y: auto;
+}
+
+.outarea {
+	flex-grow: 1;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	height: calc(100vh - 60px);
+	align-content:flex-start
+}
+
+.peerbox {
+	background-color: var(--backcolor1);
+	border-radius: 1rem;
+	display: grid;
+	grid-template-columns: 1fr 3fr;
+	margin: .5rem;
+	padding: .5rem;
+	color: gainsboro;
+	font-family: 'Roboto Mono', sans-serif;
+	font-weight: 400;
 	font-size: 1rem;
+	/* box-shadow: 0 0 .25rem rgba(255, 255, 255, 0.5); */
+}
+
+#demo_peerbox {
+	display: none;
+}
+
+.peerlabel {
+	grid-column-start: 1;
+	margin: .25rem 1rem;
+	max-width: 150px;
+}
+
+.peeritem {
+	grid-column-start: 2;
+	margin: .25rem 1rem;
+}
+
+.peerbox p {
+	margin: 0;
+}
+
+#publickey {
+	color: white;
+	font-weight: 700;
+}
+
+footer {
+	color: gainsboro;
+}
+
+.outputbox {
+	background-color: var(--backcolor1);
+	border-radius: 1rem;
+	margin: .5rem;
+	padding: .5rem;
+	color: gainsboro;
+	font-family: 'Roboto Mono', sans-serif;
+	font-weight: 400;
+	font-size: 1rem;
+}
+
+.outputbox p {
+	margin: .3rem;
 }

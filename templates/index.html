@@ -6,18 +6,41 @@
 	<title>test</title>
 	<link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 	<link href="{{ url_for('static', filename='css/index.css') }}" rel="stylesheet">
+	<style> @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@200;300;400&family=Roboto:ital,wght@0,100;0,300;0,400;1,100&display=swap');</style>
 </head>
 <body>
-	<div id="container">
-		<div>
-			<p id="mline">Hello</p>
+	<header>
+		<nav>
+			<div>
+				<p class="giant" id="logo1">wire</p><p class="giant" id="logo2">Sync</p>
+			</div>
+			<div>
+				<div class="myButton" id="statusButton"><p>Status</p></div>
+				<div class="myButton" id="peerButton"><p>Peers</p></div>
+			</div>
+		</nav>
+	</header>
+	<main>
+		<div class="outarea">
 		</div>
-		<form id="form">
-			<input type="text" id="msgLine" placeholder="Message">
-			<button id="submit">Submit</button>
-		</form>
+	</main>
+	<div class="peerbox" id="demo_peerbox">
+		<div class="peerlabel"><p>publickey</p></div>
+		<div class="peeritem publickey"><p>blaentoheusntahoenthuasonthaoseu</p></div>
+		<div class="peerlabel"><p>WG ip</p></div>
+		<div class="peeritem wgip"><p>10.0.0.1</p></div>
+		<div class="peerlabel"><p>Listen port</p></div>
+		<div class="peeritem listen_port" ><p>33444</p></div>
+		<div class="peerlabel"><p>LAN ip</p></div>
+		<div class="peeritem lanip"><p>192.168.1.2</p></div>
+		<div class="peerlabel"><p>WAN ip</p></div>
+		<div class="peeritem wanip"><p>1.2.3.4</p></div>
+		<div class="peerlabel"><p>Updated</p></div>
+		<div class="peeritem time"><p>Yesterday</p></div>
 	</div>
-
+	<!-- <footer>
+		<p id="helpline"></p>
+	</footer> -->
 	<script src="https://code.jquery.com/jquery-3.2.1.js" integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=" crossorigin="anonymous"></script>
 	<script src="{{ url_for('static', filename='js/index.js') }}"></script>
 </body>

@@ -4,6 +4,12 @@ import queue
 from flask import jsonify
 from collections import defaultdict
 import sqlite3
+import subprocess
+
+def wgstatus(data):
+	n = subprocess.check_output(['sudo', 'wg']).decode('utf-8')
+	response_data = {'t':'status', 'm': n}
+	return jsonify(response_data)
 
 
 class Dbase:
@@ -40,10 +46,19 @@ class Dbase:
 		self.conn.close()
 
 
+	def peers(self):
+		peers = []
+		self.cur.execute(f'SELECT * FROM clients')
+		for row in self.cur.fetchall():
+			peers.append({'t':'peer', 'publickey': row[0], 'wgip': row[1], 'listen_port':row[2], 'lan_name': row[3], 'lanip': row[4], 'wanip': row[5], 'time': row[6]  })
+		return peers
+
+
 class Logic:
 	def __init__(self):
 		print('creating logic')
 		self.input_queue = queue.Queue()
+		self.output_queue = queue.Queue()
 		self.pendingLock = threading.Lock()
 		self.pending = defaultdict(list)
 		self.workthread = threading.Thread(target=self.run)
@@ -92,6 +107,18 @@ class Logic:
 		self.pendingLock.release()
 
 
+	def peers(self, data):
+		self.input_queue.put(data)
+		peers = self.output_queue.get()
+		response_data = { "t": "peers", "peers": peers }
+		return jsonify(response_data)
+
+
+	def _peers(self, data):
+		peers = self.db.peers()
+		self.output_queue.put(peers)
+
+
 	def run(self):
 		print('logic running')
 		self.db = Dbase()
@@ -103,7 +130,8 @@ class Logic:
 				self._update(data)
 			if data['t'] == 'getPeer':
 				self._getPeer(data)
-
+			if data['t'] == 'peers':
+				self._peers(data)
 			self.input_queue.task_done()
 
 		self.db.close()

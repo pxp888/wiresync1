@@ -48,11 +48,13 @@ if __name__ == "__main__":
 	funcs['update'] = mind.update
 	funcs['check'] = mind.check
 	funcs['getPeer'] = mind.getPeer
-	
+	funcs['peers'] = mind.peers
+	funcs['status'] = logic.wgstatus
+
 	app.run(
 		host=os.environ.get("IP", "0.0.0.0"),
 		port=int(os.environ.get("PORT", "5000")),
-		debug=False)
+		debug=True)
 
 	mind.stop()
 

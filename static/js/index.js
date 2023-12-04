@@ -29,18 +29,68 @@ function getmsg(data) {
 
 // ############################ LOGIC ############################
 
+const outarea = document.getElementsByClassName('outarea')[0];
+
+
+function showoutput(data) {
+	outarea.innerHTML = '';
+	let lines = data['m'].split('\n');
+	let box = document.createElement('div');
+	box.className = 'outputbox';
+	for (let line of lines) {
+		if (line.length == 0) { 
+			outarea.appendChild(box);
+			box = document.createElement('div');
+			box.className = 'outputbox';
+		}
+		let p = document.createElement('p');
+		p.innerText = line;
+		box.appendChild(p);
+	}
+}
+
 
 async function statPressed(e) {
 	e.preventDefault();
-	const data = { 't':'stat',
-		'm':document.getElementById('msgLine').value };
+	const data = { 't':'status' };
 	sendmsg(data);
 }
-rfuncs['stat'] = function(data) {
-	say('stat response: ' + data['m']);
+rfuncs['status'] = showoutput;
+
+
+async function peerPressed(e) {
+	e.preventDefault();
+	const data = { 't':'peers' };
+	sendmsg(data);
+}
+rfuncs['peers'] = function(data) {
+	outarea.innerHTML = '';
+	let peers = data['peers'];
+	const items = ['publickey', 'wgip', 'listen_port', 'lanip', 'wanip'];
+	for (let peer of peers) {
+		let box = document.createElement('div');
+		box.className = 'peerbox';
+		box.innerHTML = document.getElementById('demo_peerbox').innerHTML;
+
+		for (let item of items) {
+			box.getElementsByClassName(item)[0].innerText = peer[item];
+		}
+		outarea.appendChild(box);
+		// convert peer['time'] to local time
+		let time = new Date(peer['time'] * 1000);
+		let time_str = time.toLocaleString();
+		box.getElementsByClassName('time')[0].innerText = time_str;
+	}
 }
 
-$("#submit").click(statPressed);
-$("#msgLine").addEventListener("submit", function(event) { preventDefault(event); });
+
+// ############################ PAGE SETUP ############################
 
 
+
+// ############################ EVENT LISTENERS ############################
+
+$("#statusButton").click(statPressed);
+$("#peerButton").click(peerPressed);
+
+$("#peerButton").click();
