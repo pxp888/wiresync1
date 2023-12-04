@@ -45,6 +45,10 @@ function showoutput(data) {
 		}
 		let p = document.createElement('p');
 		p.innerText = line;
+
+		if (line.includes('allowed ips:') ) {
+			p.classList.add('highline');
+		}
 		box.appendChild(p);
 	}
 }
@@ -75,11 +79,10 @@ rfuncs['peers'] = function(data) {
 		for (let item of items) {
 			box.getElementsByClassName(item)[0].innerText = peer[item];
 		}
-		outarea.appendChild(box);
-		// convert peer['time'] to local time
 		let time = new Date(peer['time'] * 1000);
 		let time_str = time.toLocaleString();
 		box.getElementsByClassName('time')[0].innerText = time_str;
+		outarea.appendChild(box);
 	}
 }
 

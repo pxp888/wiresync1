@@ -9,12 +9,11 @@
 body {
 	background-color: var(--backcolor1);
 	margin: 0;
-	padding: 0;
-	display: flex;
-	flex-direction: column;
-
+	
 	-ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
+
+	color: gainsboro;
 }
 body::-webkit-scrollbar {
     display: none;
@@ -24,18 +23,13 @@ body::-webkit-scrollbar {
 header {
 	font-family: 'Roboto', sans-serif;
 	background-color: var(--backcolor1);
-	color: gainsboro;
 	display: flex;
 	flex-direction: row;
 	z-index: 1;
-
-	/* box-shadow: 0 0 .25rem rgba(255, 255, 255, 0.5); */
-	border-bottom: 1px solid rgba(80, 80, 80, 0.5);
-
-
 	position: fixed;
 	top: 0;
 	width: 100%;
+	/* border-bottom: 1px solid rgba(80, 80, 80, 0.5); */
 }
 
 nav {
@@ -44,6 +38,7 @@ nav {
 	flex-wrap: wrap;
 	align-items: baseline;
 	margin: 0;
+	/* border-bottom: 1px solid rgba(80, 80, 80, 0.5); */
 }
 
 nav div {
@@ -67,8 +62,6 @@ nav p {
 
 .myButton:hover {
 	cursor: pointer;
-	/* color: var(--highlight2); */
-	/* background-color: rgb(10, 10, 10); */
 	color: white;
 	font-weight: 600;
 }
@@ -97,6 +90,17 @@ main {
 	overflow-y: auto;
 }
 
+@media screen and (max-width: 600px) {
+	#logo1 {
+		font-size: 2rem;
+		margin-left: 1rem;
+	}
+	#logo2 {
+		font-size: 2rem;
+		margin-right: 1rem;
+	}
+}
+
 .outarea {
 	flex-grow: 1;
 	display: flex;
@@ -113,11 +117,9 @@ main {
 	grid-template-columns: 1fr 3fr;
 	margin: .5rem;
 	padding: .5rem;
-	color: gainsboro;
 	font-family: 'Roboto Mono', sans-serif;
 	font-weight: 400;
 	font-size: 1rem;
-	/* box-shadow: 0 0 .25rem rgba(255, 255, 255, 0.5); */
 }
 
 #demo_peerbox {
@@ -139,21 +141,11 @@ main {
 	margin: 0;
 }
 
-#publickey {
-	color: white;
-	font-weight: 700;
-}
-
-footer {
-	color: gainsboro;
-}
-
 .outputbox {
 	background-color: var(--backcolor1);
 	border-radius: 1rem;
 	margin: .5rem;
 	padding: .5rem;
-	color: gainsboro;
 	font-family: 'Roboto Mono', sans-serif;
 	font-weight: 400;
 	font-size: 1rem;
@@ -162,3 +154,8 @@ footer {
 .outputbox p {
 	margin: .3rem;
 }
+
+.highline {
+	color: var(--highlight1);
+}
+
