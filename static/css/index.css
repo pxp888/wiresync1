@@ -109,23 +109,31 @@ main {
 
 .outarea {
 	flex-grow: 1;
-	display: flex;
+	/* display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
+	align-content:flex-start; */
+
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: auto;
+	align-items: start;
+	
 	height: calc(100vh - 60px);
-	align-content:flex-start
 }
 
 .peerbox {
 	background-color: var(--backcolor1);
 	border-radius: 1rem;
 	display: grid;
-	grid-template-columns: 1fr 3fr;
+	grid-template-columns: 1fr 2fr;
 	margin: .5rem;
 	padding: .5rem;
 	font-family: 'Roboto Mono', sans-serif;
 	font-weight: 400;
 	font-size: 1rem;
+
+	height: min-content;
 }
 
 #demo_peerbox {
@@ -155,6 +163,7 @@ main {
 	font-family: 'Roboto Mono', sans-serif;
 	font-weight: 400;
 	font-size: 1rem;
+	height: min-content;
 }
 
 .outputbox p {
