@@ -4,6 +4,12 @@
 	--highlight3: rgb(255, 70, 132);
 	--backcolor1: rgb(46, 48, 62);
 	--backcolor2: rgb(30, 32, 42);
+
+	--highlight1: rgb(128, 196, 241);
+	--highlight2: rgb(233 32 99);
+	--highlight3: rgb(255, 70, 132);
+	--backcolor1: rgb(13 17 23);
+	--backcolor2: rgb(9 12 14);
 }
 
 body {
@@ -29,7 +35,8 @@ header {
 	position: fixed;
 	top: 0;
 	width: 100%;
-	/* border-bottom: 1px solid rgba(80, 80, 80, 0.5); */
+	border-bottom: 1px solid rgba(80, 80, 80, 0.5);
+	/* box-shadow: 0 0 10px rgba(49, 49, 49, 0.5); */
 }
 
 nav {
