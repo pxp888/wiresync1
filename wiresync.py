@@ -80,7 +80,7 @@ def get_gateway_mac():
 def sendmsg(data):
 	try:
 		response = requests.post(f'http://{gin["server"]}/test', json={'data': data})
-		print(response.json())
+		# print(response.json())
 		return response.json()
 	except Exception as e:
 		print(e)
@@ -167,7 +167,7 @@ class Client:
 		self.endpoints[data['publickey']] = endpoint
 		print(f'sudo wg set wg0 peer {data["publickey"]} allowed-ips {data["wgip"]}/32 endpoint {endpoint}')
 		print(f'sudo ip route add {data["wgip"]}/32 via dev wg0')
-			
+
 
 if __name__ == '__main__':
 	n = Client()
