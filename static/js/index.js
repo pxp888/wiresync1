@@ -70,7 +70,7 @@ async function peerPressed(e) {
 rfuncs['peers'] = function(data) {
 	outarea.innerHTML = '';
 	let peers = data['peers'];
-	const items = ['publickey', 'wgip', 'listen_port', 'lanip', 'wanip'];
+	const items = ['publickey', 'wgip', 'listen_port', 'lanip', 'wanip','lan_name'];
 	for (let peer of peers) {
 		let box = document.createElement('div');
 		box.className = 'peerbox';
@@ -97,3 +97,4 @@ $("#statusButton").click(statPressed);
 $("#peerButton").click(peerPressed);
 
 $("#peerButton").click();
+
