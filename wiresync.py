@@ -165,8 +165,12 @@ class Client:
 				return 
 
 		self.endpoints[data['publickey']] = endpoint
-		print(f'sudo wg set wg0 peer {data["publickey"]} allowed-ips {data["wgip"]}/32 endpoint {endpoint}')
-		print(f'sudo ip route add {data["wgip"]}/32 via dev wg0')
+		com1 = f'sudo wg set wg0 peer {data["publickey"]} allowed-ips {data["wgip"]}/32 endpoint {endpoint}'
+		com2 = f'sudo ip route add {data["wgip"]}/32 via dev wg0'
+		print(com1)
+		print(com2)
+		os.system(com1)
+		os.system(com2)
 
 
 if __name__ == '__main__':
@@ -174,9 +178,9 @@ if __name__ == '__main__':
 
 	n.update()
 	while True:
-		time.sleep(.25)
-		n.check()
 		time.sleep(1)
+		n.check()
+		time.sleep(4)
 		# break
 
 
