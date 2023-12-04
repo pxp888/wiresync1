@@ -29,7 +29,9 @@ function getmsg(data) {
 
 // ############################ LOGIC ############################
 
+
 const outarea = document.getElementsByClassName('outarea')[0];
+let refint = setInterval(peerPressed, 1000 * 60 * 5);
 
 
 function showoutput(data) {
@@ -54,23 +56,25 @@ function showoutput(data) {
 }
 
 
-async function statPressed(e) {
-	e.preventDefault();
+async function statPressed() {
 	const data = { 't':'status' };
 	sendmsg(data);
+	clearInterval(refint);
+	refint = setInterval(statPressed, 1000 * 60 * 5);
 }
 rfuncs['status'] = showoutput;
 
 
-async function peerPressed(e) {
-	e.preventDefault();
+async function peerPressed() {
 	const data = { 't':'peers' };
 	sendmsg(data);
+	clearInterval(refint);
+	refint = setInterval(peerPressed, 1000 * 60 * 5);
 }
 rfuncs['peers'] = function(data) {
 	outarea.innerHTML = '';
 	let peers = data['peers'];
-	const items = ['publickey', 'wgip', 'listen_port', 'lanip', 'wanip','lan_name'];
+	const items = ['publickey', 'wgip', 'listen_port', 'lanip', 'wanip', 'lan_name' ];
 	for (let peer of peers) {
 		let box = document.createElement('div');
 		box.className = 'peerbox';
@@ -91,7 +95,10 @@ rfuncs['peers'] = function(data) {
 
 
 
+
+
 // ############################ EVENT LISTENERS ############################
+
 
 $("#statusButton").click(statPressed);
 $("#peerButton").click(peerPressed);

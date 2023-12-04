@@ -2,14 +2,14 @@
 	--highlight1: rgb(128, 196, 241);
 	--highlight2: rgb(233 32 99);
 	--highlight3: rgb(255, 70, 132);
-	--backcolor1: rgb(46, 48, 62);
-	--backcolor2: rgb(30, 32, 42);
+	--backcolor1: rgb(13 17 23);
+	--backcolor2: rgb(9 12 14);
 
 	--highlight1: rgb(128, 196, 241);
 	--highlight2: rgb(233 32 99);
 	--highlight3: rgb(255, 70, 132);
 	--backcolor1: rgb(13 17 23);
-	--backcolor2: rgb(9 12 14);
+	--backcolor2: rgb(24 34 41);
 }
 
 body {
@@ -24,7 +24,6 @@ body {
 body::-webkit-scrollbar {
     display: none;
 }
-
 
 header {
 	font-family: 'Roboto', sans-serif;
@@ -166,3 +165,10 @@ main {
 	color: var(--highlight1);
 }
 
+.highline2 {
+	color: var(--highlight2);
+}
+
+.highline3 {
+	color: var(--highlight3);
+}
