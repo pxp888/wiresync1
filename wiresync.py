@@ -4,6 +4,9 @@ import time
 import subprocess
 import configparser
 
+import netifaces
+
+
 
 try:
 	config = configparser.ConfigParser()
@@ -29,10 +32,27 @@ def show(item):
 	return out
 
 
-def getLanIP(prefix='192.168.1'):
+
+def getLanIP(prefix='192.168.'):
 	command = f'ifconfig | grep {prefix}'
 	m = subprocess.check_output(command, shell=True).decode('utf-8').strip().split(' ')[1]
 	return m
+
+
+def getWgip(interface='wg0'):
+    try:
+        result = subprocess.getoutput(f'ip addr show {interface}')
+        ip_address = result.split('inet ')[1].split('/')[0]
+        return ip_address
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
+
+
+def getDefaultLanIP():
+	default_interface = netifaces.gateways()['default'][netifaces.AF_INET][1]
+	ip_address = netifaces.ifaddresses(default_interface)[netifaces.AF_INET][0]['addr']
+	return ip_address
 
 
 def getWanIP():
@@ -101,7 +121,8 @@ class Client:
 
 	def refresh(self):
 		self.publickey = get_wg_publickey()
-		self.wgip = getLanIP('10.0.0')
+		# self.wgip = getLanIP('10.0.0')
+		self.wgip = getWgip()
 		self.listen_port = get_wg_port()
 		self.lan_name = get_gateway_mac()
 
@@ -123,7 +144,7 @@ class Client:
 				'wgip': self.wgip,
 				'listen_port': self.listen_port,
 				'lan_name': self.lan_name,
-				'lanip': getLanIP(),
+				'lanip': getDefaultLanIP(),
 				'wanip': getWanIP()}
 		return sendmsg(data)
 
@@ -182,5 +203,4 @@ if __name__ == '__main__':
 		n.check()
 		time.sleep(4)
 		# break
-
 
