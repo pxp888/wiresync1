@@ -3,9 +3,9 @@ import os
 import time
 import subprocess
 import configparser
+import logging
 
 import netifaces
-
 
 
 try:
@@ -15,10 +15,26 @@ try:
 except Exception as e:
 	print(e)
 	print('No config file found, using defaults')
-	gin = {
-		'server': '192.168.1.38:5000',
-		'interface': 'wg0'
-	}
+	gin = {}
+
+defaultgin = {
+	'server': '192.168.1.38:5000',
+	'interface': 'wg0',
+	'bugout': 'print',
+	'logfile': 'wiresyncclient.log'}
+for i in defaultgin:
+	if i not in gin:
+		gin[i] = defaultgin[i]
+
+
+logging.basicConfig(filename=gin['logfile'], encoding='utf-8', level=logging.INFO, format='%(levelname)s - %(asctime)s  >  %(message)s')
+
+
+def say(*args):
+	if 'print' in gin['bugout']:
+		print(time.asctime(),' >> ', *args)
+	if 'log' in gin['bugout']:
+		logging.info(*args)
 
 
 def show(item):
@@ -100,10 +116,10 @@ def get_gateway_mac():
 def sendmsg(data):
 	try:
 		response = requests.post(f'http://{gin["server"]}/test', json={'data': data})
-		# print(response.json())
+		# say(response.json())
 		return response.json()
 	except Exception as e:
-		print(e)
+		say(e)
 		return None
 
 
@@ -129,10 +145,10 @@ class Client:
 
 	def handle(self, data):
 		if data is None:
-			print('data is None')
+			say('data is None')
 			return 
 		if not 't' in data: 
-			print('no t in data')
+			say('no t in data')
 			return
 		self.funcs[data['t']](data)
 
@@ -146,6 +162,7 @@ class Client:
 				'lan_name': self.lan_name,
 				'lanip': getDefaultLanIP(),
 				'wanip': getWanIP()}
+		say('update: ' , str(data))
 		return sendmsg(data)
 
 
@@ -173,6 +190,7 @@ class Client:
 
 
 	def peer(self, data):
+		say('peer: ', data)
 		if data['publickey'] == self.publickey: 
 			return
 
@@ -188,8 +206,8 @@ class Client:
 		self.endpoints[data['publickey']] = endpoint
 		com1 = f'sudo wg set wg0 peer {data["publickey"]} allowed-ips {data["wgip"]}/32 endpoint {endpoint}'
 		com2 = f'sudo ip route add {data["wgip"]}/32 via dev wg0'
-		print(com1)
-		print(com2)
+		say(com1)
+		say(com2)
 		os.system(com1)
 		os.system(com2)
 
