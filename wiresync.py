@@ -215,6 +215,9 @@ class Client:
 	def run(self):
 		oldlan_name = ''
 		oldlanip = ''
+		oldwanip = ''
+
+		count = 0 
 		while True:
 			lan_name = get_gateway_mac()
 			lanip = getDefaultLanIP()
@@ -224,6 +227,15 @@ class Client:
 			self.check()
 			oldlan_name = lan_name
 			oldlanip = lanip
+
+			count = (count + 1) % 1000
+			if count%10 == 0:
+				wanip = getWanIP()
+				if wanip != oldwanip:
+					self.update()
+					time.sleep(1)
+				oldwanip = wanip
+
 			time.sleep(60)
 
 
