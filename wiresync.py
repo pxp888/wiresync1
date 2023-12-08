@@ -194,13 +194,24 @@ class Client:
 		os.system(com2)
 
 
+	def run(self):
+		oldlan_name = ''
+		oldlanip = ''
+		while True:
+			lan_name = get_gateway_mac()
+			lanip = getDefaultLanIP()
+			if lan_name != oldlan_name or lanip != oldlanip:
+				self.update()
+				time.sleep(1)
+			self.check()
+			oldlan_name = lan_name
+			oldlanip = lanip
+			time.sleep(60)
+
+
 if __name__ == '__main__':
 	n = Client()
+	n.run()
 
-	n.update()
-	while True:
-		time.sleep(1)
-		n.check()
-		time.sleep(4)
-		# break
+
 
