@@ -10,6 +10,8 @@
 	--highlight3: rgb(255 255 255);
 	--backcolor1: rgb(13 17 23);
 	--backcolor2: rgb(0 0 0);
+
+	--backcolor3: rgb(39 39 39);
 }
 
 body {
@@ -157,6 +159,10 @@ main {
 	font-weight: 400;
 	font-size: 1rem;
 	height: min-content;
+}
+
+.handshake {
+	background-color: var(--backcolor3);
 }
 
 .outputbox p {

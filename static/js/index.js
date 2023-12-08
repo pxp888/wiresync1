@@ -51,6 +51,9 @@ function showoutput(data) {
 		if (line.includes('allowed ips:')) {
 			p.classList.add('highline1');
 		}
+		if (line.includes('handshake')) {
+			box.classList.add('handshake');
+		}
 		// if ( line.includes('public key:') || line.includes('peer') ) { p.classList.add('highline1'); }
 		box.appendChild(p);
 	}
