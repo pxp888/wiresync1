@@ -32,10 +32,18 @@ function getmsg(data) {
 
 const outarea = document.getElementsByClassName('outarea')[0];
 let refint = setInterval(peerPressed, 1000 * 60 * 5);
+const timestamp = document.getElementById('timestamp');
+
+
+function updateTimestamp() {
+	let now = new Date();
+	timestamp.innerText = now.toLocaleString();
+}
 
 
 function showoutput(data) {
 	outarea.innerHTML = '';
+	
 	let lines = data['m'].split('\n');
 	let box = document.createElement('div');
 	box.className = 'outputbox';
@@ -57,6 +65,7 @@ function showoutput(data) {
 		// if ( line.includes('public key:') || line.includes('peer') ) { p.classList.add('highline1'); }
 		box.appendChild(p);
 	}
+	updateTimestamp();
 }
 
 
@@ -92,6 +101,7 @@ rfuncs['peers'] = function(data) {
 		box.getElementsByClassName('time')[0].innerText = time_str;
 		outarea.appendChild(box);
 	}
+	updateTimestamp();
 }
 
 

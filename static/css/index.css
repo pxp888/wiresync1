@@ -181,3 +181,8 @@ main {
 	color: var(--highlight3);
 }
 
+#timestamp {
+	margin: .5rem 2rem 0 2rem;
+	font-family: 'Roboto', sans-serif;
+	color: #b2b2b2;
+}
